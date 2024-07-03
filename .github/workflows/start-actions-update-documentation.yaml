@@ -57,8 +57,17 @@ jobs:
           cd repo_copilot/repo_documentation
           python update_app.py "${{ env.BRANCH_NAME }}"
 
-      - name: Commit and push if changes
+      - name: Commit and push if changes in clucker
         run: |
+          cd clucker
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
+          git add .
+          git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+
+      - name: Commit and push if changes in repo_copilot
+        run: |
+          cd repo_copilot
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
