@@ -1,3 +1,6 @@
 [submodule "clucker"]
 	path = clucker
 	url = https://github.com/ZenaWangqwq/clucker.git
+[submodule "repo_copilot"]
+	path = repo_copilot
+	url = https://github.com/ucl-repo-copilot/repo-copilot.git
