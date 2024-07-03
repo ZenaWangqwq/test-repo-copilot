@@ -69,18 +69,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit and push if changes in repo_copilot
-        run: |
-          cd repo_copilot
-          git checkout zena/test_doc_update
-          git config --local user.email "github-actions@github.com"
-          git config --local user.name "github-actions"
-          git add .
-          git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase)
-          git push https://x-access-token:${{ secrets.DOCBOT_SSH_KEY }}@github.com/ucl-repo-copilot/repo-copilot.git
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Commit and push if changes in test_repo_copilot
         run: |
           git config --local user.email "github-actions@github.com"
