@@ -1,0 +1,3 @@
+[submodule "clucker"]
+	path = clucker
+	url = https://github.com/ZenaWangqwq/clucker.git
