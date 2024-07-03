@@ -60,6 +60,7 @@ jobs:
       - name: Commit and push if changes in clucker
         run: |
           cd clucker
+          git checkout ${{ env.BRANCH_NAME }}
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
@@ -68,6 +69,15 @@ jobs:
       - name: Commit and push if changes in repo_copilot
         run: |
           cd repo_copilot
+          git checkout zena/test_doc_update
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
+          git add .
+          git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+
+      - name: Commit and push if changes in test_repo_copilot
+        run: |
+          git checkout main
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
