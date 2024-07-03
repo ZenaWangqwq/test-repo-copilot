@@ -40,8 +40,12 @@ jobs:
         run: |
           cd repo_copilot
           pip3 install -r requirements.txt
-          curl -fsSL https://ollama.com/install.sh | sh
-          ollama run llama3
+
+      - name: Start ollama server
+        run: curl -fsSL https://ollama.com/install.sh | sh
+  
+      - name: Run Llama 3
+        run: ollama run llama3
 
       - name: Run update documentation script
         run: |
