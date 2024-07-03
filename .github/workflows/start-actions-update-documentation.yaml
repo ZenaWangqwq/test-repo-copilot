@@ -3,8 +3,8 @@ on:
   push:
       branches:
         - '**'
-      # paths:
-      # - 'clucker/**'
+      paths:
+      - 'clucker/**'
   
 jobs:          
   documentation:
