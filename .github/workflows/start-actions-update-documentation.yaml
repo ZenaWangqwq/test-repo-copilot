@@ -64,7 +64,7 @@ jobs:
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
-          git remote set-url origin https:https://github.com/ZenaWangqwq/clucker.git
+          git remote set-url origin https://github.com/ZenaWangqwq/clucker.git
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
 
       - name: Commit and push if changes in repo_copilot
