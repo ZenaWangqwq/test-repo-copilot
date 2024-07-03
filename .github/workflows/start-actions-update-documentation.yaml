@@ -3,6 +3,8 @@ on:
   push:
       branches:
         - '**'
+      # paths:
+      # - 'clucker/**'
   
 jobs:          
   documentation:
@@ -36,10 +38,13 @@ jobs:
             echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f3)" >> $GITHUB_ENV
         id: branch_name
 
-      - name: Install repo_copilot's dependencies and run llama3 with ollama server
+      - name: Install repo_copilot's dependencies
         run: |
           cd repo_copilot
           pip3 install -r requirements.txt
+
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
 
       - name: Start ollama server
         run: curl -fsSL https://ollama.com/install.sh | sh
