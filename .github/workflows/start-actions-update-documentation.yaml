@@ -1,46 +1,56 @@
 name: Start Actions on Commit for Updating Documentation
-
 on:
   push:
-    branches:
-      - '**'
-
+      branches:
+        - '**'
+      # paths:
+      # - 'clucker/**'
+  
 jobs:          
   documentation:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: true  # Ensure submodules are initialized and updated
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with: 
-          python-version: '3.10'
+         python-version: '3.10'
       
-      - name: Install Graphviz
-        run: sudo apt-get install -y graphviz
+      - name: Clone Submodule clucker and repo_copilot
+        run: |
+          git submodule init
+          git submodule update
 
-      - name: Install ollama server
-        run: curl -fsSL https://ollama.com/install.sh | sh
-        
-      - name: Run Llama 3
-        run: ollama run llama3
+      - name: Clone Submodule for code2flow
+        run: |
+          cd repo_copilot
+          git submodule init
+          git submodule update
 
-      - name: Install repo_copilot dependencies
+      - name: Get cluker's branch name
+        run: |
+            cd clucker
+            echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f3)" >> $GITHUB_ENV
+        id: branch_name
+
+      - name: Install repo_copilot's dependencies
         run: |
           cd repo_copilot
           pip3 install -r requirements.txt
 
-      - name: Get clucker's branch name
-        run: |
-          cd clucker
-          echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f3)" >> $GITHUB_ENV
-        id: branch_name
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+
+      - name: Start ollama server
+        run: curl -fsSL https://ollama.com/install.sh | sh
+  
+      - name: Run Llama 3
+        run: ollama run llama3
 
       - name: Run update documentation script
         run: |
@@ -54,20 +64,17 @@ jobs:
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
+          git remote add origin https:https://github.com/ZenaWangqwq/clucker.git
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push if changes in repo_copilot
         run: |
           cd repo_copilot
-          git checkout ${{ env.BRANCH_NAME }}
+          git checkout zena/test_doc_update
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push if changes in test_repo_copilot
         run: |
@@ -75,5 +82,3 @@ jobs:
           git config --local user.name "github-actions"
           git add .
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
