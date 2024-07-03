@@ -65,6 +65,8 @@ jobs:
           git config --local user.name "github-actions"
           git add .
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push if changes in repo_copilot
         run: |
@@ -74,11 +76,14 @@ jobs:
           git config --local user.name "github-actions"
           git add .
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push if changes in test_repo_copilot
         run: |
-          git checkout main
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git add .
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
