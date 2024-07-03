@@ -27,6 +27,9 @@ jobs:
 
       - name: Install ollama server
         run: curl -fsSL https://ollama.com/install.sh | sh
+        
+      - name: Run Llama 3
+        run: ollama run llama3
 
       - name: Install repo_copilot dependencies
         run: |
