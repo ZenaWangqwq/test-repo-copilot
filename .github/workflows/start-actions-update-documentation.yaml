@@ -1,0 +1,55 @@
+name: Start Actions on Commit for Updating Documentation
+on:
+  push:
+      branches:
+        - '**'
+  
+jobs:          
+  documentation:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with: 
+         python-version: '3.10'
+      
+      - name: Clone Submodule clucker and repo_copilot
+        run: |
+          git submodule init
+          git submodule update
+
+      - name: Get clcuker's branch name
+        run: |
+            cd clucker
+            echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f3)" >> $GITHUB_ENV
+        id: branch_name
+
+      - name: Clone Submodule for code2flow
+        run: |
+          cd ../repo_copilot
+          git submodule init
+          git submodule update
+
+      - name: Install repo_copilot's dependencies and run llama3 with ollama server
+        run: |
+          pip3 install -r requirements.txt
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama run llama3
+
+      - name: Run update documentation script
+        run: |
+          cd repo_documentation
+          python update_app.py "${{ env.BRANCH_NAME }}"
+
+      - name: Commit and push if changes
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
+          git add .
+          git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
