@@ -44,9 +44,10 @@ jobs:
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
           if [ -z "$branch_name" ]; then
             echo "Warning: The commit does not contains clucker submodule."
-            exit 0
+            exit 1
           fi
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
+          exit 0
 
       - name: Install repo_copilot's dependencies
         run: |
