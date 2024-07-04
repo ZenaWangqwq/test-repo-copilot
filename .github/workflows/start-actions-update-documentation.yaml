@@ -36,7 +36,7 @@ jobs:
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
           if [ -z "$branch_name" ]; then
             echo "No branch name for clucker submodule in the commit."
-            exit 0
+            exit 1
           fi
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
 
