@@ -28,16 +28,32 @@ jobs:
       - name: Determine clucker's Commit SHA
         id: submodule_commit
         run: |
-          submodule_commit_sha=$(git submodule status clucker | awk '{print $1}')
-          echo "commit_sha=$submodule_commit_sha" >> $GITHUB_ENV
+          submodule_commit_sha=$(git ls-tree HEAD clucker | awk '{print $3}')
+          if [ -z "$submodule_commit_sha" ]; then
+            echo "No commit SHA found for clucker submodule."
+            echo "commit_sha=" >> $GITHUB_ENV
+          else
+            echo "commit_sha=$submodule_commit_sha" >> $GITHUB_ENV
+          fi
 
       - name: Get clucker's Branch Name
         id: branch_name
         run: |
+          if [ -z "${{ env.commit_sha }}" ]; then
+            echo "No commit SHA provided, skipping branch name determination."
+            echo "BRANCH_NAME=" >> $GITHUB_ENV
+            exit 0
+          fi
           cd clucker
           git fetch origin
+          echo "Fetched origin in clucker submodule."
           branch_name=$(git branch -r --contains ${{ env.commit_sha }} | grep -v detached | head -n1 | awk '{print $1}' | cut -d'/' -f2)
+          if [ -z "$branch_name" ]; then
+            echo "No branch found containing the commit ${{ env.commit_sha }}"
+            exit 1
+          fi
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${branch_name}"
 
       - name: Install repo_copilot's dependencies
         run: |
