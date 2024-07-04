@@ -53,6 +53,7 @@ jobs:
       - name: Run update documentation script
         run: |
           cd repo_copilot/repo_documentation
+          git checkout zena/test_update_doc_fork
           python update_app.py "${{ env.BRANCH_NAME }}"
 
       - name: Commit and push if changes in clucker
