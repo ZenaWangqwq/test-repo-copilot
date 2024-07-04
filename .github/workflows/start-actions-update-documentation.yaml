@@ -19,22 +19,23 @@ jobs:
         with: 
          python-version: '3.10'
       
-      - name: Clone Submodule clucker and repo_copilot
+      - name: Initialize and Update Submodules
         run: |
-          git submodule init
-          git submodule update
+          git submodule update --init --recursive
 
-      - name: Clone Submodule for code2flow
+      - name: Determine clucker's Commit SHA
+        id: submodule_commit
         run: |
-          cd repo_copilot
-          git submodule init
-          git submodule update
+          cd clucker
+          git checkout $(git rev-parse HEAD)
+          echo "::set-output name=commit_sha::$(git rev-parse HEAD)"
 
-      - name: Get cluker's branch name
-        run: |
-            cd clucker
-            echo "BRANCH_NAME=$(echo $GITHUB_REF | cut -d'/' -f3)" >> $GITHUB_ENV
+      - name: Get clucker's Branch Name
         id: branch_name
+        run: |
+          cd clucker
+          branch_name=$(git branch --contains ${{ steps.submodule_commit.outputs.commit_sha }} | grep -v detached | head -n1 | awk '{print $NF}')
+          echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
 
       - name: Install repo_copilot's dependencies
         run: |
