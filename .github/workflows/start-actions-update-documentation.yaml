@@ -60,11 +60,9 @@ jobs:
         run: |
           cd clucker
           mkdir -p temp_docs_output
-          mv docs_output/call_graph.json temp_docs_output/
-          mv docs_output/graph.png temp_docs_output/
+          mv docs_output temp_docs_output/
           git checkout ${{ env.BRANCH_NAME }}
-          mv temp_docs_output/call_graph.json docs_output/
-          mv temp_docs_output/graph.png docs_output/
+          mv temp_docs_output/ docs_output/
           rmdir temp_docs_output
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
