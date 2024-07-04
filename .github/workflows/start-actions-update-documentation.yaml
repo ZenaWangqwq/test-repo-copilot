@@ -74,6 +74,8 @@ jobs:
           cd repo_copilot/repo_documentation
           git checkout zena/test_update_doc_fork
           python update_app.py "origin/${{ env.BRANCH_NAME }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push if changes in clucker
         run: |
