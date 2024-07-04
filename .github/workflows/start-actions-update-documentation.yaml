@@ -40,7 +40,6 @@ jobs:
       - name: Get clucker's Branch Name
         id: branch_name
         run: |
-          cd clucker
           branch_name=$(git branch --contains ${{ steps.submodule_commit.outputs.commit_sha }} | grep -v detached | head -n1 | awk '{print $NF}')
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
 
