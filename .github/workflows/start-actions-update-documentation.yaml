@@ -26,18 +26,22 @@ jobs:
       - name: Determine clucker's Commit SHA
         id: submodule_commit
         run: |
+          cd clucker
           git checkout $(git rev-parse HEAD)
           echo "::set-output name=commit_sha::$(git rev-parse HEAD)"
+
+      - name: Check if submodule_commit output is empty
+        run: |
+          if [ -z "${{ steps.submodule_commit.outputs.commit_sha }}" ]; then
+            echo "submodule_commit step did not produce commit SHA. Exiting."
+            exit 1
+          fi
 
       - name: Get clucker's Branch Name
         id: branch_name
         run: |
+          cd clucker
           branch_name=$(git branch --contains ${{ steps.submodule_commit.outputs.commit_sha }} | grep -v detached | head -n1 | awk '{print $NF}')
-          echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
-          if [ -z "$branch_name" ]; then
-            echo "No branch name for clucker submodule in the commit."
-            exit 1
-          fi
           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
 
       - name: Install repo_copilot's dependencies
