@@ -62,12 +62,10 @@ jobs:
           mkdir -p temp_docs_output
           mv docs_output/call_graph.json temp_docs_output/
           mv docs_output/graph.png temp_docs_output/
-          git stash
           git checkout ${{ env.BRANCH_NAME }}
           mv temp_docs_output/call_graph.json docs_output/
           mv temp_docs_output/graph.png docs_output/
           rmdir temp_docs_output
-          git stash pop
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git config remote.origin.url "https://github.com/ZenaWangqwq/clucker.git"
