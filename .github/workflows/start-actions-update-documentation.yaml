@@ -59,7 +59,9 @@ jobs:
       - name: Commit and push if changes in clucker
         run: |
           cd clucker
+          git stash
           git checkout ${{ env.BRANCH_NAME }}
+          git stash pop
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions"
           git config remote.origin.url "https://github.com/ZenaWangqwq/clucker.git"
