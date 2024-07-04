@@ -80,3 +80,9 @@ jobs:
           git config --local user.name "github-actions"
           git add .
           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+
+      - name: Git pull the updated documentation in the test-repo-copilot
+        run: |
+          cd clucker
+          git checkout ${{ env.BRANCH_NAME }}
+          git pull
