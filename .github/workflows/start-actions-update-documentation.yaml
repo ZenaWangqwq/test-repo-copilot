@@ -72,7 +72,7 @@ jobs:
       - name: Run update documentation script
         run: |
           cd repo_copilot/repo_documentation
-          git checkout zena/test_update_doc_fork
+          git checkout zena/test_doc_update
           python update_app.py "origin/${{ env.BRANCH_NAME }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
