@@ -1,109 +1,109 @@
-# name: Start Actions on Commit for Updating Documentation
-# on:
-#   push:
-#       branches:
-#         - '**'
-#       path:
-#         - "clucker/**"
+name: Start Actions on Commit for Updating Documentation
+on:
+  push:
+      branches:
+        - '**'
+      path:
+        - "clucker/**"
   
-# jobs:          
-#   documentation:
-#     if: github.event_name == 'push'
-#     runs-on: ubuntu-latest
-#     permissions:
-#       contents: write
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v2
+jobs:          
+  documentation:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-#       - name: Set up Python
-#         uses: actions/setup-python@v2
-#         with: 
-#          python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with: 
+         python-version: '3.10'
       
-#       - name: Initialize and Update Submodules
-#         run: |
-#           git submodule update --init --recursive
+      - name: Initialize and Update Submodules
+        run: |
+          git submodule update --init --recursive
 
-#       - name: Determine clucker's Commit SHA
-#         id: submodule_commit
-#         run: |
-#           submodule_commit_sha=$(git ls-tree HEAD clucker | awk '{print $3}')
-#           if [ -z "$submodule_commit_sha" ]; then
-#             echo "No commit SHA found for clucker submodule."
-#             echo "commit_sha=" >> $GITHUB_ENV
-#           else
-#             echo "commit_sha=$submodule_commit_sha" >> $GITHUB_ENV
-#           fi
+      - name: Determine clucker's Commit SHA
+        id: submodule_commit
+        run: |
+          submodule_commit_sha=$(git ls-tree HEAD clucker | awk '{print $3}')
+          if [ -z "$submodule_commit_sha" ]; then
+            echo "No commit SHA found for clucker submodule."
+            echo "commit_sha=" >> $GITHUB_ENV
+          else
+            echo "commit_sha=$submodule_commit_sha" >> $GITHUB_ENV
+          fi
 
-#       - name: Get clucker's Branch Name
-#         id: branch_name
-#         run: |
-#           if [ -z "${{ env.commit_sha }}" ]; then
-#             echo "No commit SHA provided, skipping branch name determination."
-#             echo "BRANCH_NAME=" >> $GITHUB_ENV
-#             exit 0
-#           fi
-#           cd clucker
-#           git fetch origin
-#           echo "Fetched origin in clucker submodule."
-#           branch_name=$(git branch -r --contains ${{ env.commit_sha }} | grep -v detached | head -n1 | awk '{print $1}' | cut -d'/' -f2)
-#           if [ -z "$branch_name" ]; then
-#             echo "No branch found containing the commit ${{ env.commit_sha }}"
-#             exit 1
-#           fi
-#           echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
-#           echo "BRANCH_NAME=${branch_name}"
+      - name: Get clucker's Branch Name
+        id: branch_name
+        run: |
+          if [ -z "${{ env.commit_sha }}" ]; then
+            echo "No commit SHA provided, skipping branch name determination."
+            echo "BRANCH_NAME=" >> $GITHUB_ENV
+            exit 0
+          fi
+          cd clucker
+          git fetch origin
+          echo "Fetched origin in clucker submodule."
+          branch_name=$(git branch -r --contains ${{ env.commit_sha }} | grep -v detached | head -n1 | awk '{print $1}' | cut -d'/' -f2)
+          if [ -z "$branch_name" ]; then
+            echo "No branch found containing the commit ${{ env.commit_sha }}"
+            exit 1
+          fi
+          echo "BRANCH_NAME=${branch_name}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${branch_name}"
 
-#       - name: Install repo_copilot's dependencies
-#         run: |
-#           cd repo_copilot
-#           pip3 install -r requirements.txt
+      - name: Install repo_copilot's dependencies
+        run: |
+          cd repo_copilot
+          pip3 install -r requirements.txt
 
-#       - name: Install Graphviz
-#         run: sudo apt-get install -y graphviz
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
 
-#       - name: Start ollama server
-#         run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: Start ollama server
+        run: curl -fsSL https://ollama.com/install.sh | sh
   
-#       - name: Run Llama 3
-#         run: ollama run llama3
+      - name: Run Llama 3
+        run: ollama run llama3
 
-#       - name: Run update documentation script
-#         run: |
-#           cd repo_copilot/repo_documentation
-#           git checkout zena/test_update_doc_fork
-#           python update_app.py "origin/${{ env.BRANCH_NAME }}"
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run update documentation script
+        run: |
+          cd repo_copilot/repo_documentation
+          git checkout zena/test_update_doc_fork
+          python update_app.py "origin/${{ env.BRANCH_NAME }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#       - name: Commit and push if changes in clucker
-#         run: |
-#           cd clucker
-#           mkdir -p temp_docs_output
-#           mv docs_output/* temp_docs_output/
-#           git checkout ${{ env.BRANCH_NAME }}
-#           mv temp_docs_output/* docs_output/
-#           rmdir temp_docs_output
-#           git config --local user.email "github-actions@github.com"
-#           git config --local user.name "github-actions"
-#           git config remote.origin.url "https://github.com/ZenaWangqwq/clucker.git"
-#           git add .
-#           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ZenaWangqwq/clucker.git
-#           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase)
-#           git push https://x-access-token:${{ secrets.DOCBOT_SSH_KEY }}@github.com/ZenaWangqwq/clucker.git
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push if changes in clucker
+        run: |
+          cd clucker
+          mkdir -p temp_docs_output
+          mv docs_output/* temp_docs_output/
+          git checkout ${{ env.BRANCH_NAME }}
+          mv temp_docs_output/* docs_output/
+          rmdir temp_docs_output
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
+          git config remote.origin.url "https://github.com/ZenaWangqwq/clucker.git"
+          git add .
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ZenaWangqwq/clucker.git
+          git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase)
+          git push https://x-access-token:${{ secrets.DOCBOT_SSH_KEY }}@github.com/ZenaWangqwq/clucker.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#       - name: Commit and push if changes in test_repo_copilot
-#         run: |
-#           git config --local user.email "github-actions@github.com"
-#           git config --local user.name "github-actions"
-#           git add .
-#           git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
+      - name: Commit and push if changes in test_repo_copilot
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
+          git add .
+          git diff-index --quiet HEAD || (git commit -m "Documentation Updated" && git pull --rebase && git push)
 
-#       - name: Git pull the updated documentation in the test-repo-copilot
-#         run: |
-#           cd clucker
-#           git checkout ${{ env.BRANCH_NAME }}
-#           git pull
+      - name: Git pull the updated documentation in the test-repo-copilot
+        run: |
+          cd clucker
+          git checkout ${{ env.BRANCH_NAME }}
+          git pull
